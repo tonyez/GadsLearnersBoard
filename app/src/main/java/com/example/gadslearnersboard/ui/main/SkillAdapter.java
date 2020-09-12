@@ -46,7 +46,7 @@ class SkillAdapter extends RecyclerView.Adapter<SkillAdapter.ViewHolder> {
     private void loadBadge(SkillAdapter.ViewHolder holder, String url) {
         Glide.with(mContext)
                 .load(url)
-                .error(R.drawable.top_learner)
+                .error(R.drawable.skill_iq_trimmed)
                 .into(holder.skillBadge);
     }
 

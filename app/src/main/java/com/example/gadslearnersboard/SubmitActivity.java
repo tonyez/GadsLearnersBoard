@@ -29,17 +29,10 @@ public class SubmitActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_submit);
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        ActionBar actionBar = getSupportActionBar();
-//        setSupportActionBar(toolbar);
-//        actionBar.setDisplayHomeAsUpEnabled(true);
-        toolbar.setNavigationIcon(R.drawable.ic_arrow_back);
+        getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+        getSupportActionBar().setCustomView(R.layout.toolbar_main);
 
-
-        et_firstName = findViewById(R.id.first_name);
-        et_lastName = findViewById(R.id.last_name);
-        et_emailAddress = findViewById(R.id.email_address);
-        et_githubLink = findViewById(R.id.github_link);
+        findViews();
         Button main_submit_button = findViewById(R.id.main_submit_button);
         main_submit_button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -49,6 +42,22 @@ public class SubmitActivity extends AppCompatActivity {
             }
         });
     }
+
+    private void findViews() {
+        et_firstName = findViewById(R.id.first_name);
+        et_lastName = findViewById(R.id.last_name);
+        et_emailAddress = findViewById(R.id.email_address);
+        et_githubLink = findViewById(R.id.github_link);
+    }
+
+    private void extractDataFromForm() {
+        firstName = et_firstName.getText().toString();
+        lastName = et_lastName.getText().toString();
+        emailAddress = et_emailAddress.getText().toString();
+        githubLink = et_githubLink.getText().toString();
+    }
+
+
 
     private void showSubmissionDialog() {
         MaterialAlertDialogBuilder materialAlertDialogBuilder = new MaterialAlertDialogBuilder(this,
@@ -80,47 +89,45 @@ public class SubmitActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 int statusCode = response.code();
-                if (statusCode == 200) {
-                    MaterialAlertDialogBuilder materialAlertDialogBuilder = new MaterialAlertDialogBuilder(SubmitActivity.this,
-                            R.style.RoundShapeTheme);
-                    materialAlertDialogBuilder
-                            .setView(R.layout.sub_successful)
-                            .setOnCancelListener(new DialogInterface.OnCancelListener() {
-                                @Override
-                                public void onCancel(DialogInterface dialogInterface) {
-//                                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                                   finish();
-                                }
-                            })
-                            .create()
-                            .show();
-                }else {
-                    MaterialAlertDialogBuilder materialAlertDialogBuilder = new MaterialAlertDialogBuilder(SubmitActivity.this,
-                            R.style.RoundShapeTheme);
-                    materialAlertDialogBuilder
-                            .setView(R.layout.sub_unsuccessful)
-                            .setOnCancelListener(new DialogInterface.OnCancelListener() {
-                                @Override
-                                public void onCancel(DialogInterface dialogInterface) {
-                                    recreate();
-                                }
-                            })
-                            .create()
-                            .show();
-                }
+                showStatusDialog(statusCode);
             }
 
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
                 Log.e("Submission", "Failed Submission", t);
+
             }
         });
     }
 
-    private void extractDataFromForm() {
-        firstName = et_firstName.getText().toString();
-        lastName = et_lastName.getText().toString();
-        emailAddress = et_emailAddress.getText().toString();
-        githubLink = et_githubLink.getText().toString();
+    private void showStatusDialog(int responseCode) {
+        if (responseCode == 200) {
+            MaterialAlertDialogBuilder materialAlertDialogBuilder = new MaterialAlertDialogBuilder(SubmitActivity.this,
+                    R.style.RoundShapeTheme);
+            materialAlertDialogBuilder
+                    .setView(R.layout.sub_successful)
+                    .setOnCancelListener(new DialogInterface.OnCancelListener() {
+                        @Override
+                        public void onCancel(DialogInterface dialogInterface) {
+                            finish();
+                        }
+                    })
+                    .create()
+                    .show();
+        }else {
+            MaterialAlertDialogBuilder materialAlertDialogBuilder = new MaterialAlertDialogBuilder(SubmitActivity.this,
+                    R.style.RoundShapeTheme);
+            materialAlertDialogBuilder
+                    .setView(R.layout.sub_unsuccessful)
+                    .setOnCancelListener(new DialogInterface.OnCancelListener() {
+                        @Override
+                        public void onCancel(DialogInterface dialogInterface) {
+                            recreate();
+                        }
+                    })
+                    .create()
+                    .show();
+        }
     }
+
 }
