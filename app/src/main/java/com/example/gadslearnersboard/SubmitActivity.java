@@ -6,12 +6,14 @@ import androidx.appcompat.widget.Toolbar;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.drawable.Icon;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
 
 import com.example.gadslearnersboard.api.PostFormService;
 import com.google.android.material.button.MaterialButton;
@@ -29,6 +31,7 @@ public class SubmitActivity extends AppCompatActivity {
     private EditText et_firstName, et_lastName, et_emailAddress, et_githubLink;
     private String firstName, lastName, emailAddress, githubLink;
     private Button mMain_submit_button;
+    private ProgressBar mProgressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +47,14 @@ public class SubmitActivity extends AppCompatActivity {
             makeViewsInvisible();
             showSubmissionDialog();
         });
+        ImageButton up_Nav_Icon = getSupportActionBar().getCustomView()
+                .findViewById(R.id.up_navigation_icon);
+        up_Nav_Icon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(SubmitActivity.this, MainActivity.class));
+            }
+        });
     }
 
     private void findViews() {
@@ -51,6 +62,7 @@ public class SubmitActivity extends AppCompatActivity {
         et_lastName = findViewById(R.id.last_name);
         et_emailAddress = findViewById(R.id.email_address);
         et_githubLink = findViewById(R.id.github_link);
+        mProgressBar = findViewById(R.id.progressBar);
     }
 
     private void extractDataFromForm() {
@@ -66,6 +78,11 @@ public class SubmitActivity extends AppCompatActivity {
         et_emailAddress.setVisibility(View.INVISIBLE);
         et_githubLink.setVisibility(View.INVISIBLE);
         mMain_submit_button.setVisibility(View.INVISIBLE);
+        mProgressBar.setVisibility(View.VISIBLE);
+    }
+
+    private void removeProgressBar() {
+        mProgressBar.setVisibility(View.INVISIBLE);
     }
 
     private void showSubmissionDialog() {
@@ -79,7 +96,10 @@ public class SubmitActivity extends AppCompatActivity {
                 .create()
                 .show();
 
-        cancelButton.setOnClickListener(view -> recreate());
+        cancelButton.setOnClickListener(view -> {
+           removeProgressBar();
+            recreate();
+        });
 
     }
 
@@ -105,7 +125,10 @@ public class SubmitActivity extends AppCompatActivity {
                     new MaterialAlertDialogBuilder(SubmitActivity.this, R.style.RoundShapeTheme);
             materialAlertDialogBuilder
                     .setView(R.layout.sub_successful)
-                    .setOnCancelListener(dialogInterface -> finish())
+                    .setOnCancelListener(dialogInterface -> {
+                        removeProgressBar();
+                        finish();
+                    })
                     .create()
                     .show();
         }else {
@@ -114,7 +137,10 @@ public class SubmitActivity extends AppCompatActivity {
                     R.style.RoundShapeTheme);
             materialAlertDialogBuilder
                     .setView(R.layout.sub_unsuccessful)
-                    .setOnCancelListener(dialogInterface -> recreate())
+                    .setOnCancelListener(dialogInterface -> {
+                        removeProgressBar();
+                        recreate();
+                    })
                     .create()
                     .show();
         }
