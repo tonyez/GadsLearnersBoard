@@ -17,6 +17,10 @@ import com.example.gadslearnersboard.api.PostFormService;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Objects;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -24,22 +28,21 @@ import retrofit2.Response;
 public class SubmitActivity extends AppCompatActivity {
     private EditText et_firstName, et_lastName, et_emailAddress, et_githubLink;
     private String firstName, lastName, emailAddress, githubLink;
+    private Button mMain_submit_button;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_submit);
-        getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+        Objects.requireNonNull(getSupportActionBar()).setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
         getSupportActionBar().setCustomView(R.layout.toolbar_main);
 
         findViews();
-        Button main_submit_button = findViewById(R.id.main_submit_button);
-        main_submit_button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                extractDataFromForm();
-                showSubmissionDialog();
-            }
+        mMain_submit_button = findViewById(R.id.main_submit_button);
+        mMain_submit_button.setOnClickListener(view -> {
+            extractDataFromForm();
+            makeViewsInvisible();
+            showSubmissionDialog();
         });
     }
 
@@ -57,7 +60,13 @@ public class SubmitActivity extends AppCompatActivity {
         githubLink = et_githubLink.getText().toString();
     }
 
-
+    private void makeViewsInvisible() {
+        et_firstName.setVisibility(View.INVISIBLE);
+        et_lastName.setVisibility(View.INVISIBLE);
+        et_emailAddress.setVisibility(View.INVISIBLE);
+        et_githubLink.setVisibility(View.INVISIBLE);
+        mMain_submit_button.setVisibility(View.INVISIBLE);
+    }
 
     private void showSubmissionDialog() {
         MaterialAlertDialogBuilder materialAlertDialogBuilder = new MaterialAlertDialogBuilder(this,
@@ -66,34 +75,24 @@ public class SubmitActivity extends AppCompatActivity {
         ImageButton cancelButton = customVeiw.findViewById(R.id.dismiss_button);
         materialAlertDialogBuilder
                 .setView(customVeiw)
-                .setPositiveButton("YES", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        postForm();
-                    }
-                })
+                .setPositiveButton("YES", (dialogInterface, i) -> postForm())
                 .create()
                 .show();
 
-        cancelButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-            }
-        });
+        cancelButton.setOnClickListener(view -> recreate());
 
     }
 
     private void postForm() {
         new PostFormService().submitApp(firstName, lastName, emailAddress, githubLink).enqueue(new Callback<Void>() {
             @Override
-            public void onResponse(Call<Void> call, Response<Void> response) {
+            public void onResponse(@NotNull Call<Void> call, @NotNull Response<Void> response) {
                 int statusCode = response.code();
                 showStatusDialog(statusCode);
             }
 
             @Override
-            public void onFailure(Call<Void> call, Throwable t) {
+            public void onFailure(@NotNull Call<Void> call, @NotNull Throwable t) {
                 Log.e("Submission", "Failed Submission", t);
 
             }
@@ -102,29 +101,20 @@ public class SubmitActivity extends AppCompatActivity {
 
     private void showStatusDialog(int responseCode) {
         if (responseCode == 200) {
-            MaterialAlertDialogBuilder materialAlertDialogBuilder = new MaterialAlertDialogBuilder(SubmitActivity.this,
-                    R.style.RoundShapeTheme);
+            MaterialAlertDialogBuilder materialAlertDialogBuilder =
+                    new MaterialAlertDialogBuilder(SubmitActivity.this, R.style.RoundShapeTheme);
             materialAlertDialogBuilder
                     .setView(R.layout.sub_successful)
-                    .setOnCancelListener(new DialogInterface.OnCancelListener() {
-                        @Override
-                        public void onCancel(DialogInterface dialogInterface) {
-                            finish();
-                        }
-                    })
+                    .setOnCancelListener(dialogInterface -> finish())
                     .create()
                     .show();
         }else {
-            MaterialAlertDialogBuilder materialAlertDialogBuilder = new MaterialAlertDialogBuilder(SubmitActivity.this,
+            MaterialAlertDialogBuilder materialAlertDialogBuilder =
+                    new MaterialAlertDialogBuilder(SubmitActivity.this,
                     R.style.RoundShapeTheme);
             materialAlertDialogBuilder
                     .setView(R.layout.sub_unsuccessful)
-                    .setOnCancelListener(new DialogInterface.OnCancelListener() {
-                        @Override
-                        public void onCancel(DialogInterface dialogInterface) {
-                            recreate();
-                        }
-                    })
+                    .setOnCancelListener(dialogInterface -> recreate())
                     .create()
                     .show();
         }
