@@ -25,7 +25,7 @@ public class MainActivity extends AppCompatActivity {
         AppCompatImageButton tb_submit_button = findViewById(R.id.submit_button);
 
         ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(this);
-       ViewPager2 viewPager2 = findViewById(R.id.view_pager);
+        ViewPager2 viewPager2 = findViewById(R.id.view_pager);
         viewPager2.setAdapter(viewPagerAdapter);
         TabLayout tabs = findViewById(R.id.tabs);
         new TabLayoutMediator(tabs, viewPager2, new TabLayoutMediator.TabConfigurationStrategy() {

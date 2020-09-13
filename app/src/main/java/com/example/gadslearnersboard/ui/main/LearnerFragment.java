@@ -14,16 +14,15 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.gadslearnersboard.R;
 import com.example.gadslearnersboard.models.TopLearner;
-
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import java.util.List;
 
-/**
- * A placeholder fragment containing a simple view.
- */
 public class LearnerFragment extends Fragment {
 
 
     private LearnerViewModel mLearnerViewModel;
+    private RecyclerView mRecyclerView;
+    private LearnerAdapter mLearnerAdapter;
 
     public static LearnerFragment newInstance() {
         return new LearnerFragment();
@@ -37,20 +36,34 @@ public class LearnerFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(
-            @NonNull LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_learner, container, false);
-        final RecyclerView recyclerView = root.findViewById(R.id.rv_gads);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(requireContext());
-        recyclerView.setLayoutManager(linearLayoutManager);
+        mRecyclerView = root.findViewById(R.id.rv_gads);
         mLearnerViewModel.getTopLearner().observe(getViewLifecycleOwner(), new Observer<List<TopLearner>>() {
             @Override
             public void onChanged(List<TopLearner> topLearners) {
-                LearnerAdapter learnerAdapter = new LearnerAdapter(requireContext(),topLearners);
-                recyclerView.setAdapter(learnerAdapter);
+                LinearLayoutManager linearLayoutManager = new LinearLayoutManager(requireContext());
+                mRecyclerView.setLayoutManager(linearLayoutManager);
+                mLearnerAdapter = new LearnerAdapter(requireContext(), topLearners);
+                mRecyclerView.setAdapter(mLearnerAdapter);
             }
         });
         return root;
     }
+
+    /*private void showNetworkDialog(Boolean isConnected) {
+        final MaterialAlertDialogBuilder materialAlertDialogBuilder = new MaterialAlertDialogBuilder(requireContext(),
+                R.style.RoundShapeTheme);
+        View customTitleVeiw = View.inflate(requireContext(), R.layout.network_alert, null);
+        materialAlertDialogBuilder
+                .setCustomTitle(customTitleVeiw)
+                .setMessage("No internet connection found!" + "\n" +
+                        "Please, turn on your Mobile data")
+                .setPositiveButton("OK", (dialogInterface, i) -> {
+
+                })
+                .setCancelable(false)
+                .show();
+    }*/
 }
