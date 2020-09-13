@@ -3,4 +3,10 @@
 
     <string name="learner_page_title">Learning Leaders</string>
     <string name="skill_leader_title">Skill IQ Leaders</string>
+    <string name="first_name_hint">First Name</string>
+    <string name="last_name_hint">Last Name</string>
+    <string name="email_address_hint">Email Address</string>
+    <string name="link_to_project_hint">Project on GITHUB (link)</string>
+    <string name="project_submission_title">Project Submission</string>
+    <string name="submit_button_title">Submit</string>
 </resources>
